@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Award, Users, Sparkles, Leaf, Heart, UtensilsCrossed, Wine, Coffee,
   MapPin, Phone, Clock, Instagram, Facebook, Twitter, ArrowUp, MessageCircle,
-  Star, ChevronDown, X, Search, Menu, Calendar as CalIcon, Trophy, Bike, Flag,
+  Star, ChevronDown, X, Search, Menu as MenuIcon, Calendar as CalIcon, Trophy, Flag,
   Cake, Building2, PartyPopper, ChefHat, Sprout,
 } from "lucide-react";
 
