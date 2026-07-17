@@ -16,17 +16,14 @@ function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
+        <h1 className="font-display text-7xl text-gold-gradient">404</h1>
+        <h2 className="mt-4 text-xl font-medium">Page not found</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+          The page you're looking for doesn't exist.
         </p>
         <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
+          <Link to="/" className="btn-gold inline-flex rounded-full px-6 py-3 text-sm">
+            Return home
           </Link>
         </div>
       </div>
@@ -40,32 +37,19 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <h1 className="font-display text-2xl">Something went wrong</h1>
+        <p className="mt-2 text-sm text-muted-foreground">Please try again.</p>
+        <div className="mt-6 flex justify-center gap-3">
           <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            onClick={() => { router.invalidate(); reset(); }}
+            className="btn-gold rounded-full px-6 py-3 text-sm"
           >
             Try again
           </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            Go home
-          </a>
+          <a href="/" className="btn-outline-gold rounded-full px-6 py-3 text-sm">Home</a>
         </div>
       </div>
     </div>
@@ -77,21 +61,63 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
-      { property: "og:type", content: "website" },
+      { title: "Appetito Club — Fine Dining & Lifestyle Destination in Greater Noida" },
+      {
+        name: "description",
+        content:
+          "Appetito Club is Greater Noida's premier fine dining destination — international cuisine, handcrafted mocktails, outdoor seating, private dining, pickleball and mini golf at Knowledge Park II.",
+      },
+      { name: "author", content: "Appetito Club" },
+      { name: "theme-color", content: "#0B0B0B" },
+      { property: "og:title", content: "Appetito Club — Fine Dining & Lifestyle Destination" },
+      {
+        property: "og:description",
+        content:
+          "Where exceptional dining meets extraordinary experiences. Reserve your table at Greater Noida's finest restaurant.",
+      },
+      { property: "og:type", content: "restaurant.restaurant" },
+      { property: "og:site_name", content: "Appetito Club" },
+      { property: "og:url", content: "/" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Appetito Club — Greater Noida" },
+      {
+        name: "twitter:description",
+        content: "Premium dining, world cuisine and outdoor experiences at Knowledge Park II.",
+      },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Poppins:wght@300;400;500;600;700&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Restaurant",
+          name: "Appetito Club",
+          image: "/og-cover.jpg",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "R3, Knowledge Park II",
+            addressLocality: "Greater Noida",
+            addressRegion: "Uttar Pradesh",
+            postalCode: "201310",
+            addressCountry: "IN",
+          },
+          telephone: "+91-8860023344",
+          servesCuisine: ["International", "Italian", "Indian", "Pan Asian", "Lebanese"],
+          priceRange: "₹₹₹",
+          openingHours: "Mo-Su 11:00-22:30",
+          aggregateRating: { "@type": "AggregateRating", ratingValue: "4.5", reviewCount: "1800" },
+        }),
+      },
     ],
   }),
   shellComponent: RootShell,
@@ -102,7 +128,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <HeadContent />
       </head>
@@ -116,10 +142,8 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
     </QueryClientProvider>
   );
