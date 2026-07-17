@@ -870,8 +870,8 @@ function Reservation() {
                 </Field>
               </div>
             </div>
-            <button type="submit" className="btn-gold mt-8 w-full rounded-full py-4 text-sm uppercase tracking-widest">
-              {sent ? "Request Sent ✓ We'll be in touch" : "Reserve Now"}
+            <button type="submit" disabled={submitting} className="btn-gold mt-8 w-full rounded-full py-4 text-sm uppercase tracking-widest disabled:opacity-60">
+              {submitting ? "Sending…" : sent ? "Request Sent ✓ We'll be in touch" : "Reserve Now"}
             </button>
           </form>
         </Reveal>
