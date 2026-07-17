@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion, useScroll, useSpring, useTransform, AnimatePresence, useMotionValue, useTransform as useTransform2 } from "framer-motion";
+import { motion, useScroll, useSpring, useTransform, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  useMagnetic, useTilt, useCountUp, useInView, useLockBody, useSmoothScroll,
+  useTilt, useCountUp, useInView,
 } from "@/hooks/use-premium";
 import {
   Award, Users, Sparkles, Leaf, Heart, UtensilsCrossed, Wine, Coffee,
@@ -241,17 +241,6 @@ function Particles() {
         />
       ))}
     </div>
-  );
-}
-
-/* ---------- Magnetic button wrapper ---------- */
-
-function Magnetic({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  const ref = useMagnetic<HTMLAnchorElement>(0.3);
-  return (
-    <a ref={ref} className={`magnetic inline-block ${className}`}>
-      {children}
-    </a>
   );
 }
 
