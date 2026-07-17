@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion, useScroll, useSpring, useTransform, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { z } from "zod";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Award, Users, Sparkles, Leaf, Heart, UtensilsCrossed, Wine, Coffee,
   MapPin, Phone, Clock, Instagram, Facebook, Twitter, ArrowUp, MessageCircle,
