@@ -1,14 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion, useScroll, useSpring, useTransform, AnimatePresence } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useSpring, useTransform, AnimatePresence, useMotionValue, useTransform as useTransform2 } from "framer-motion";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
+  useMagnetic, useTilt, useCountUp, useInView, useLockBody, useSmoothScroll,
+} from "@/hooks/use-premium";
+import {
   Award, Users, Sparkles, Leaf, Heart, UtensilsCrossed, Wine, Coffee,
   MapPin, Phone, Clock, Instagram, Facebook, Twitter, ArrowUp, MessageCircle,
   Star, ChevronDown, X, Search, Menu as MenuIcon, Calendar as CalIcon, Trophy, Flag,
-  Cake, Building2, PartyPopper, ChefHat, Sprout,
+  Cake, Building2, PartyPopper, ChefHat, Sprout, Bike,
 } from "lucide-react";
 
 import heroInterior from "@/assets/hero-interior.jpg";
@@ -88,6 +91,7 @@ const experiences = [
   { title: "Pickleball", desc: "Championship-grade courts under open skies.", img: expPickleball, icon: Trophy },
   { title: "Mini Golf", desc: "A whimsical 9-hole course beside the garden.", img: expGolf, icon: Flag },
   { title: "Outdoor Dining", desc: "Candlelit tables beneath olive trees.", img: expOutdoor, icon: Sprout },
+  { title: "Cycling", desc: "Scenic loops through Knowledge Park II.", img: expOutdoor, icon: Bike },
   { title: "Private Dining", desc: "An intimate marble room for twelve.", img: galleryPrivate, icon: Building2 },
   { title: "Celebrations", desc: "Birthdays, anniversaries, family reunions.", img: galleryCouple, icon: Cake },
   { title: "Corporate Events", desc: "Bespoke evenings for teams and clients.", img: galleryChef, icon: PartyPopper },
@@ -160,6 +164,33 @@ const galleryImages = [
   { src: dishButter, alt: "Butter chicken", span: "" },
 ];
 
+/* ---------- Tilt card wrapper ---------- */
+
+function TiltCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  const ref = useTilt<HTMLDivElement>(6);
+  return (
+    <div ref={ref} className={className}>
+      {children}
+    </div>
+  );
+}
+
+/* ---------- Counter stat ---------- */
+
+function CounterStat({ value, suffix = "", label, decimals = 0 }: { value: number; suffix?: string; label: string; decimals?: number }) {
+  const { ref, inView } = useInView<HTMLDivElement>(0.5);
+  const v = useCountUp(value, 1800, inView);
+  return (
+    <div ref={ref}>
+      <div className="font-display text-4xl text-gold-gradient">
+        {v.toFixed(decimals)}
+        <span className="text-lg">{suffix}</span>
+      </div>
+      <div className="mt-1 text-xs uppercase tracking-widest text-foreground/60">{label}</div>
+    </div>
+  );
+}
+
 /* ---------- Cursor Glow ---------- */
 
 function CursorGlow() {
@@ -177,6 +208,73 @@ function CursorGlow() {
         background: `radial-gradient(400px circle at ${pos.x}px ${pos.y}px, oklch(0.76 0.09 82 / 0.08), transparent 70%)`,
       }}
     />
+  );
+}
+
+/* ---------- Particles ---------- */
+
+function Particles() {
+  const dots = useMemo(
+    () => Array.from({ length: 28 }, () => ({
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      s: Math.random() * 2 + 0.5,
+      d: Math.random() * 8 + 6,
+      delay: Math.random() * 6,
+    })),
+    [],
+  );
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 z-[5] overflow-hidden">
+      {dots.map((p, i) => (
+        <span
+          key={i}
+          className="absolute rounded-full bg-gold/40 animate-floaty"
+          style={{
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            width: `${p.s}px`,
+            height: `${p.s}px`,
+            animationDuration: `${p.d}s`,
+            animationDelay: `${p.delay}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ---------- Magnetic button wrapper ---------- */
+
+function Magnetic({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  const ref = useMagnetic<HTMLAnchorElement>(0.3);
+  return (
+    <a ref={ref} className={`magnetic inline-block ${className}`}>
+      {children}
+    </a>
+  );
+}
+
+/* ---------- Split text reveal ---------- */
+
+function SplitText({ text, className = "", delay = 0 }: { text: string; className?: string; delay?: number }) {
+  const words = text.split(" ");
+  return (
+    <span className={className}>
+      {words.map((w, i) => (
+        <span key={i} className="text-reveal">
+          <motion.span
+            initial={{ y: "110%" }}
+            animate={{ y: 0 }}
+            transition={{ delay: delay + i * 0.08, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+            className="inline-block"
+          >
+            {w}
+          </motion.span>
+          {i < words.length - 1 && "\u00A0"}
+        </span>
+      ))}
+    </span>
   );
 }
 
@@ -293,6 +391,7 @@ function Hero() {
           height={1200}
         />
         <div className="absolute inset-0" style={{ background: "var(--gradient-hero)" }} />
+        <Particles />
       </motion.div>
 
       <motion.div
@@ -310,16 +409,14 @@ function Hero() {
           <span className="h-px w-10 bg-gold/60" />
         </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="font-display text-4xl leading-[1.05] sm:text-6xl md:text-7xl lg:text-[88px]"
-        >
-          Where Exceptional Dining
+        <h1 className="font-display text-4xl leading-[1.05] sm:text-6xl md:text-7xl lg:text-[88px]">
+          <SplitText text="Where Exceptional Dining" delay={0.4} />
           <br />
-          <span className="italic text-gold-gradient">Meets Extraordinary</span> Experiences
-        </motion.h1>
+          <span className="italic text-gold-gradient">
+            <SplitText text="Meets Extraordinary" delay={0.9} />
+          </span>{" "}
+          <SplitText text="Experiences" delay={1.2} />
+        </h1>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -337,10 +434,10 @@ function Hero() {
           transition={{ delay: 0.9, duration: 0.9 }}
           className="mt-10 flex flex-col items-center gap-4 sm:flex-row"
         >
-          <a href="#reserve" className="btn-gold rounded-full px-9 py-4 text-sm uppercase tracking-widest">
+          <a href="#reserve" className="magnetic btn-gold rounded-full px-9 py-4 text-sm uppercase tracking-widest animate-pulse-gold">
             Reserve a Table
           </a>
-          <a href="#menu" className="btn-outline-gold rounded-full px-9 py-4 text-sm uppercase tracking-widest">
+          <a href="#menu" className="magnetic btn-outline-gold rounded-full px-9 py-4 text-sm uppercase tracking-widest">
             Explore Menu
           </a>
         </motion.div>
@@ -417,18 +514,9 @@ function About() {
           </p>
 
           <div className="mt-10 grid grid-cols-3 gap-6 border-t border-gold/15 pt-8">
-            <div>
-              <div className="font-display text-4xl text-gold-gradient">4.5<span className="text-lg">★</span></div>
-              <div className="mt-1 text-xs uppercase tracking-widest text-foreground/60">Google Rating</div>
-            </div>
-            <div>
-              <div className="font-display text-4xl text-gold-gradient">1800+</div>
-              <div className="mt-1 text-xs uppercase tracking-widest text-foreground/60">Happy Guests</div>
-            </div>
-            <div>
-              <div className="font-display text-4xl text-gold-gradient">18</div>
-              <div className="mt-1 text-xs uppercase tracking-widest text-foreground/60">Signatures</div>
-            </div>
+            <CounterStat value={4.5} suffix="★" decimals={1} label="Google Rating" />
+            <CounterStat value={1800} suffix="+" label="Happy Guests" />
+            <CounterStat value={18} label="Signatures" />
           </div>
         </Reveal>
 
@@ -535,7 +623,7 @@ function WhyChooseUs() {
           className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((f) => (
             <motion.div key={f.title} variants={fadeUp}
-              className="hover-lift group rounded-2xl border border-gold/10 bg-charcoal p-7 transition-colors hover:border-gold/40">
+              className="hover-lift tilt-card group rounded-2xl border border-gold/10 bg-charcoal p-7 transition-colors hover:border-gold/40">
               <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gold/10 text-gold group-hover:bg-gold group-hover:text-matte transition-colors">
                 <f.icon size={20} />
               </div>
@@ -571,8 +659,7 @@ function Experiences() {
         <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.1 }}
           className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {experiences.map((e) => (
-            <motion.article key={e.title} variants={fadeUp}
-              className="hover-lift zoom-img group relative aspect-[4/5] overflow-hidden rounded-2xl">
+            <TiltCard key={e.title} className="hover-lift zoom-img group relative aspect-[4/5] overflow-hidden rounded-2xl">
               <img src={e.img} alt={e.title} loading="lazy" className="h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-matte via-matte/40 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-7">
@@ -582,7 +669,7 @@ function Experiences() {
                 <h3 className="font-display text-2xl md:text-3xl">{e.title}</h3>
                 <p className="mt-2 text-sm text-foreground/75">{e.desc}</p>
               </div>
-            </motion.article>
+            </TiltCard>
           ))}
         </motion.div>
       </div>
