@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion, useScroll, useSpring, useTransform, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { z } from "zod";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Award, Users, Sparkles, Leaf, Heart, UtensilsCrossed, Wine, Coffee,
   MapPin, Phone, Clock, Instagram, Facebook, Twitter, ArrowUp, MessageCircle,
@@ -768,6 +771,7 @@ function Reviews() {
 /* ---------- Reservation ---------- */
 
 function Reservation() {
+  const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [form, setForm] = useState({
     name: "", phone: "", email: "", guests: "2", date: "", time: "19:30", occasion: "Dinner",
@@ -775,11 +779,51 @@ function Reservation() {
   const on = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm({ ...form, [k]: e.target.value });
 
-  const submit = (e: React.FormEvent) => {
+  const schema = z.object({
+    name: z.string().trim().min(1, "Name is required").max(120),
+    phone: z.string().trim().min(5, "Enter a valid phone").max(32),
+    email: z.string().trim().email("Enter a valid email").max(255),
+    guests: z.string(),
+    date: z.string().min(1, "Pick a date"),
+    time: z.string().min(1, "Pick a time"),
+    occasion: z.string().max(60),
+  });
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
+    const parsed = schema.safeParse(form);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "Please check the form");
+      return;
+    }
+    const partySize = parseInt(parsed.data.guests, 10) || parseInt(parsed.data.guests.replace(/\D/g, ""), 10) || 9;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    if (new Date(parsed.data.date) < today) {
+      toast.error("Please pick a future date");
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await (supabase.from("reservations") as any).insert({
+      name: parsed.data.name,
+      phone: parsed.data.phone,
+      email: parsed.data.email,
+      party_size: Math.min(20, Math.max(1, partySize)),
+      reservation_date: parsed.data.date,
+      reservation_time: parsed.data.time,
+      occasion: parsed.data.occasion || null,
+    });
+    setSubmitting(false);
+    if (error) {
+      toast.error("Could not submit reservation. Please try again.");
+      return;
+    }
+    toast.success("Reservation request received. We'll be in touch shortly.");
     setSent(true);
-    setTimeout(() => setSent(false), 5000);
+    setForm({ name: "", phone: "", email: "", guests: "2", date: "", time: "19:30", occasion: "Dinner" });
+    setTimeout(() => setSent(false), 6000);
   };
+
 
   return (
     <section id="reserve" className="relative py-32 px-6 overflow-hidden">
@@ -826,8 +870,8 @@ function Reservation() {
                 </Field>
               </div>
             </div>
-            <button type="submit" className="btn-gold mt-8 w-full rounded-full py-4 text-sm uppercase tracking-widest">
-              {sent ? "Request Sent ✓ We'll be in touch" : "Reserve Now"}
+            <button type="submit" disabled={submitting} className="btn-gold mt-8 w-full rounded-full py-4 text-sm uppercase tracking-widest disabled:opacity-60">
+              {submitting ? "Sending…" : sent ? "Request Sent ✓ We'll be in touch" : "Reserve Now"}
             </button>
           </form>
         </Reveal>
