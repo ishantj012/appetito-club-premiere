@@ -69,21 +69,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { name: "author", content: "Appetito Club" },
       { name: "theme-color", content: "#0B0B0B" },
-      { property: "og:title", content: "Appetito Club — Fine Dining & Lifestyle Destination" },
+      { property: "og:title", content: "Appetito Club — Fine Dining & Lifestyle Destination in Greater Noida" },
       {
         property: "og:description",
         content:
-          "Where exceptional dining meets extraordinary experiences. Reserve your table at Greater Noida's finest restaurant.",
+          "Appetito Club is Greater Noida's premier fine dining destination — international cuisine, handcrafted mocktails, outdoor seating, private dining, pickleball and mini golf at Knowledge Park II.",
       },
       { property: "og:type", content: "restaurant.restaurant" },
       { property: "og:site_name", content: "Appetito Club" },
       { property: "og:url", content: "/" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Appetito Club — Greater Noida" },
+      { name: "twitter:title", content: "Appetito Club — Fine Dining & Lifestyle Destination in Greater Noida" },
       {
         name: "twitter:description",
-        content: "Premium dining, world cuisine and outdoor experiences at Knowledge Park II.",
+        content: "Appetito Club is Greater Noida's premier fine dining destination — international cuisine, handcrafted mocktails, outdoor seating, private dining, pickleball and mini golf at Knowledge Park II.",
       },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/a01722ef-51e5-4fff-965c-78a77ab731b1" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/a01722ef-51e5-4fff-965c-78a77ab731b1" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
