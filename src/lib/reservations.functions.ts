@@ -29,7 +29,7 @@ export const listReservations = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    let q = context.supabase
+    let q = (context.supabase as any)
       .from("reservations")
       .select("*")
       .order("reservation_date", { ascending: false })
@@ -54,7 +54,7 @@ export const updateReservationStatus = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const { error } = await context.supabase
+    const { error } = await (context.supabase as any)
       .from("reservations")
       .update({ status: data.status })
       .eq("id", data.id);
@@ -69,7 +69,7 @@ export const updateReservationNotes = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const { error } = await context.supabase
+    const { error } = await (context.supabase as any)
       .from("reservations")
       .update({ admin_notes: data.admin_notes })
       .eq("id", data.id);
@@ -82,7 +82,7 @@ export const deleteReservation = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const { error } = await context.supabase.from("reservations").delete().eq("id", data.id);
+    const { error } = await (context.supabase as any).from("reservations").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -90,7 +90,7 @@ export const deleteReservation = createServerFn({ method: "POST" })
 export const checkAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data } = await context.supabase
+    const { data } = await (context.supabase as any)
       .from("user_roles")
       .select("role")
       .eq("user_id", context.userId)
