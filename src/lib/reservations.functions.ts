@@ -5,7 +5,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 const StatusSchema = z.enum(["pending", "confirmed", "cancelled", "completed"]);
 
 async function assertAdmin(ctx: { supabase: any; userId: string }) {
-  const { data, error } = await ctx.supabase
+  const { data, error } = await (ctx.supabase as any)
     .from("user_roles")
     .select("role")
     .eq("user_id", ctx.userId)
