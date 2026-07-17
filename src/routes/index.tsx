@@ -229,7 +229,7 @@ function Navbar() {
           onClick={() => setOpen(true)}
           aria-label="Open menu"
         >
-          <Menu size={22} />
+          <MenuIcon size={22} />
         </button>
       </nav>
       <AnimatePresence>
